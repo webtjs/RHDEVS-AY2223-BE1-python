@@ -1,5 +1,5 @@
 # This program simulates the backend of a ticket purchasing system
-Price per visitor is $5
+Price per visitor is $5; 
 Price per member is $3.50
 
 You are to do the following
