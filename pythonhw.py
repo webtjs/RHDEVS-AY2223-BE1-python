@@ -24,9 +24,82 @@ request = {
 }
 
 
+def applicantPrice(applicant, members):
+    if applicant in members:
+        return 3.5
+    return 5
+
+def generateTicket(applicant, members):
+    ticket = {
+        "name": applicant,
+        "membershipStatus": applicant in members,
+        "price": applicantPrice(applicant, members)
+    }
+    return ticket
+
+def getmembershipStatus(membershipStatus, members):
+    for applicant in request["applicants"]:
+        if applicant in members:
+            membershipStatus[applicant] = True
+        else:
+            membershipStatus[applicant] = False
+
+def getMembers():
+    members = []
+    
+    for key, value in memberStatus.items():
+        if value:
+            members.append(key)
+    
+    return members
+
+def getSuccessfulApplicants(bannedApplicants):
+    successfulApplicants = []
+
+    for name in request["applicants"]:
+        if name in bannedApplicants:
+            continue
+        successfulApplicants.append(name)
+
+    return successfulApplicants
+
+def checkBanned(name):
+    return name in bannedVisitors
+
+def getBannedApplicants():
+    bannedApplicants = filter(checkBanned, request["applicants"])
+    return list(bannedApplicants)
+
 def processRequest(request):
-    # Your code here
-    return
+    try:
+        firstApplicant = request["applicants"][0]
+    except IndexError:
+        result = {"error": "No applicants"}
+        return result
+    else:
+        bannedApplicants = getBannedApplicants()
+        successfulApplicants = getSuccessfulApplicants(bannedApplicants)
+
+        members = getMembers()
+        membershipStatus = {}
+        getmembershipStatus(membershipStatus, members)
+        
+        totalCost = 0
+        for applicant in successfulApplicants:
+            totalCost += applicantPrice(applicant, members)
+
+        tickets = []
+        for applicant in successfulApplicants:
+            tickets.append(generateTicket(applicant, members))
+
+        result = {
+            "successfulApplicants": successfulApplicants,
+            "bannedApplicants": bannedApplicants,
+            "totalCost": totalCost,
+            "tickets": tickets,
+        }
+
+        return result
 
 
 print(processRequest(request))
